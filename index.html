@@ -88,11 +88,39 @@
   .ability input { width: 4rem; text-align: center; font: bold 1.5rem Georgia, serif; background: transparent; border: none; border-bottom: 1px solid var(--ink); }
   .sheet-cols { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 1rem; }
   .sheet-cols h3 { margin: 0 0 .3rem; color: var(--accent); }
+  /* d20 */
+  .dice-wrap { display: flex; flex-direction: column; align-items: center; gap: .4rem; margin-bottom: 1.25rem; perspective: 600px; }
+  .d20 {
+    width: 120px; height: 120px; padding: 0; border: none; background: none;
+    cursor: pointer; filter: drop-shadow(0 6px 8px rgba(0,0,0,.45));
+    transform-style: preserve-3d; -webkit-tap-highlight-color: transparent;
+  }
+  .d20:disabled { cursor: progress; }
+  .d20:focus-visible { outline: 3px solid var(--gold); outline-offset: 6px; border-radius: 12px; }
+  .d20 .body { fill: var(--accent); stroke: var(--gold); stroke-width: 2.5; stroke-linejoin: round; }
+  .d20 .face { fill: #a62626; stroke: var(--gold); stroke-width: 1.5; stroke-linejoin: round; }
+  .d20 .edge { stroke: var(--gold); stroke-width: 1.5; fill: none; }
+  .d20 text { fill: var(--parchment); font: bold 22px Georgia, serif; text-anchor: middle; pointer-events: none; }
+  .d20.crit text { fill: #ffd86b; }
+  .d20.fumble text { fill: #ffb0a0; }
+  .dice-hint { color: var(--parchment); font-style: italic; font-size: .9rem; min-height: 1.4em; margin: 0; }
+  .dice-hint.crit { color: var(--gold); font-weight: bold; }
   footer { text-align: center; color: var(--parchment-dark); padding-bottom: 2rem; font-size: .85rem; }
 </style>
 </head>
 <body>
 <header>
+  <div class="dice-wrap">
+    <button class="d20" id="d20" type="button" aria-label="Roll a d20">
+      <svg viewBox="0 0 100 100" aria-hidden="true">
+        <polygon class="body" points="50,4 90,27 90,73 50,96 10,73 10,27"/>
+        <polygon class="face" points="50,18 82,70 18,70"/>
+        <path class="edge" d="M50 18 L50 4 M50 18 L10 27 M18 70 L10 27 M18 70 L10 73 M18 70 L50 96 M82 70 L50 96 M82 70 L90 73 M82 70 L90 27 M50 18 L90 27"/>
+        <text id="d20Num" x="50" y="58">20</text>
+      </svg>
+    </button>
+    <p class="dice-hint" id="d20Hint" aria-live="polite">Click the die to roll</p>
+  </div>
   <h1 contenteditable="true">Character Name</h1>
   <p contenteditable="true">Race · Class · Level</p>
 </header>
@@ -179,6 +207,44 @@
       art.querySelector("span").replaceWith(img);
     });
     grid.appendChild(fig);
+  });
+
+  // d20: tumble in 3D while numbers flicker, then land on a random face
+  const die = document.getElementById("d20"), dieNum = document.getElementById("d20Num"), dieHint = document.getElementById("d20Hint");
+  const rand20 = () => 1 + Math.floor(Math.random() * 20);
+  die.addEventListener("click", () => {
+    const result = rand20();
+    const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const duration = reduce ? 0 : 1600;
+    die.disabled = true;
+    die.classList.remove("crit", "fumble");
+    dieHint.classList.remove("crit");
+    dieHint.textContent = "Rolling…";
+    const spins = () => 360 * (2 + Math.floor(Math.random() * 3));
+    const anim = die.animate([
+      { transform: "translateY(0) rotate3d(1,1,0,0deg) rotate(0deg) scale(1)" },
+      { transform: `translateY(-50px) rotate3d(1,1,0,${spins()}deg) rotate(${spins() / 2}deg) scale(1.15)`, offset: 0.4 },
+      { transform: `translateY(0) rotate3d(1,1,0,${spins() * 2}deg) rotate(${spins()}deg) scale(1)` }
+    ], { duration, easing: "cubic-bezier(.2,.7,.3,1)" });
+    // Number flicker that slows down toward the end
+    const start = performance.now();
+    let last = 0;
+    const tick = now => {
+      const t = Math.min((now - start) / duration, 1);
+      if (duration && t < 1) {
+        if (now - last > 50 + 250 * t * t) { dieNum.textContent = rand20(); last = now; }
+        requestAnimationFrame(tick);
+      }
+    };
+    if (duration) requestAnimationFrame(tick);
+    anim.finished.then(() => {
+      dieNum.textContent = result;
+      die.disabled = false;
+      die.classList.toggle("crit", result === 20);
+      die.classList.toggle("fumble", result === 1);
+      dieHint.classList.toggle("crit", result === 20);
+      dieHint.textContent = result === 20 ? "Natural 20! Critical hit!" : result === 1 ? "Natural 1… critical fumble!" : `You rolled a ${result}`;
+    });
   });
 
   // Persist editable text and ability scores in localStorage
