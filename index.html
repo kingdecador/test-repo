@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Character Artbook</title>
+<style>
+  :root {
+    --parchment: #f3e6c8;
+    --parchment-dark: #e3d0a3;
+    --ink: #2b1d12;
+    --accent: #8b1a1a;
+    --gold: #b8892b;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: Georgia, "Times New Roman", serif;
+    background: #1d1510;
+    color: var(--ink);
+    line-height: 1.6;
+  }
+  header {
+    text-align: center;
+    padding: 3rem 1rem 2rem;
+    color: var(--parchment);
+  }
+  header h1 {
+    font-size: clamp(2rem, 6vw, 3.5rem);
+    margin: 0;
+    letter-spacing: 0.08em;
+    color: var(--gold);
+  }
+  header p { margin: .3rem 0 0; font-style: italic; }
+  nav {
+    display: flex; justify-content: center; gap: 1.5rem; flex-wrap: wrap;
+    padding-bottom: 1.5rem;
+  }
+  nav a { color: var(--parchment); text-decoration: none; border-bottom: 1px solid var(--gold); }
+  nav a:hover { color: var(--gold); }
+  main { max-width: 1000px; margin: 0 auto; padding: 0 1rem 3rem; }
+  section {
+    background: var(--parchment);
+    border: 3px double var(--gold);
+    border-radius: 6px;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+  }
+  h2 {
+    margin-top: 0;
+    color: var(--accent);
+    border-bottom: 2px solid var(--gold);
+    padding-bottom: .3rem;
+  }
+  /* Gallery */
+  .gallery {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 1rem;
+  }
+  .gallery figure { margin: 0; }
+  .art {
+    aspect-ratio: 3 / 4;
+    background: var(--parchment-dark);
+    border: 2px dashed var(--gold);
+    display: flex; align-items: center; justify-content: center;
+    text-align: center; font-style: italic; padding: .5rem;
+    cursor: pointer; overflow: hidden; position: relative;
+  }
+  .art img { width: 100%; height: 100%; object-fit: cover; }
+  .art input { display: none; }
+  figcaption { text-align: center; font-size: .9rem; margin-top: .3rem; }
+  figcaption[contenteditable]:focus, [contenteditable]:focus { outline: 2px solid var(--gold); background: rgba(255,255,255,.4); }
+  /* About */
+  .about-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 1rem; }
+  .about-grid h3 { margin: 0 0 .3rem; color: var(--accent); }
+  .box { min-height: 5rem; padding: .4rem; border: 1px solid var(--parchment-dark); background: rgba(255,255,255,.3); }
+  /* Sheet */
+  .vitals { display: grid; grid-template-columns: repeat(auto-fit, minmax(110px, 1fr)); gap: .75rem; margin-bottom: 1rem; }
+  .stat {
+    border: 2px solid var(--gold); border-radius: 8px; text-align: center;
+    padding: .5rem; background: rgba(255,255,255,.35);
+  }
+  .stat label { display: block; font-size: .7rem; letter-spacing: .1em; text-transform: uppercase; }
+  .stat .val { font-size: 1.6rem; font-weight: bold; min-height: 2.2rem; }
+  .abilities { display: grid; grid-template-columns: repeat(auto-fit, minmax(110px, 1fr)); gap: .75rem; margin-bottom: 1rem; }
+  .ability .mod { font-size: .85rem; color: var(--accent); }
+  .ability input { width: 4rem; text-align: center; font: bold 1.5rem Georgia, serif; background: transparent; border: none; border-bottom: 1px solid var(--ink); }
+  .sheet-cols { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 1rem; }
+  .sheet-cols h3 { margin: 0 0 .3rem; color: var(--accent); }
+  footer { text-align: center; color: var(--parchment-dark); padding-bottom: 2rem; font-size: .85rem; }
+</style>
+</head>
+<body>
+<header>
+  <h1 contenteditable="true">Character Name</h1>
+  <p contenteditable="true">Race · Class · Level</p>
+</header>
+<nav>
+  <a href="#gallery">Gallery</a>
+  <a href="#about">About</a>
+  <a href="#sheet">Character Sheet</a>
+</nav>
+
+<main>
+  <section id="gallery">
+    <h2>Art Gallery</h2>
+    <p><em>Click a frame to add an image. Click a caption to edit it.</em></p>
+    <div class="gallery" id="galleryGrid"></div>
+  </section>
+
+  <section id="about">
+    <h2>About the Character</h2>
+    <div class="about-grid">
+      <div><h3>Backstory</h3><div class="box" contenteditable="true">Where did they come from?</div></div>
+      <div><h3>Personality</h3><div class="box" contenteditable="true">Traits, quirks, mannerisms.</div></div>
+      <div><h3>Ideals &amp; Bonds</h3><div class="box" contenteditable="true">What do they believe in and care about?</div></div>
+      <div><h3>Flaws</h3><div class="box" contenteditable="true">Weaknesses and fears.</div></div>
+      <div><h3>Appearance</h3><div class="box" contenteditable="true">Height, build, hair, distinguishing marks.</div></div>
+      <div><h3>Allies &amp; Enemies</h3><div class="box" contenteditable="true">Friends, rivals, organizations.</div></div>
+    </div>
+  </section>
+
+  <section id="sheet">
+    <h2>Character Sheet</h2>
+    <div class="vitals">
+      <div class="stat"><label>Armor Class</label><div class="val" contenteditable="true">10</div></div>
+      <div class="stat"><label>Initiative</label><div class="val" contenteditable="true">+0</div></div>
+      <div class="stat"><label>Speed</label><div class="val" contenteditable="true">30</div></div>
+      <div class="stat"><label>Hit Points</label><div class="val" contenteditable="true">0</div></div>
+      <div class="stat"><label>Prof. Bonus</label><div class="val" contenteditable="true">+2</div></div>
+      <div class="stat"><label>Alignment</label><div class="val" contenteditable="true" style="font-size:1rem">—</div></div>
+    </div>
+
+    <div class="abilities" id="abilities"></div>
+
+    <div class="sheet-cols">
+      <div><h3>Skills &amp; Saving Throws</h3><div class="box" contenteditable="true">Acrobatics +0<br>Perception +0<br>…</div></div>
+      <div><h3>Attacks &amp; Spells</h3><div class="box" contenteditable="true">Weapon — +0 to hit — 1d8 slashing</div></div>
+      <div><h3>Features &amp; Traits</h3><div class="box" contenteditable="true">Class, race, and background features.</div></div>
+      <div><h3>Equipment</h3><div class="box" contenteditable="true">Gear, coin, treasures.</div></div>
+      <div><h3>Proficiencies &amp; Languages</h3><div class="box" contenteditable="true">Common, …</div></div>
+      <div><h3>Notes</h3><div class="box" contenteditable="true">Session notes, goals, reminders.</div></div>
+    </div>
+  </section>
+</main>
+
+<footer>Everything on this page is editable. Changes save in your browser.</footer>
+
+<script>
+  // Build ability score blocks with auto-calculated modifiers
+  const abilities = ["Strength","Dexterity","Constitution","Intelligence","Wisdom","Charisma"];
+  const abEl = document.getElementById("abilities");
+  abilities.forEach(name => {
+    const d = document.createElement("div");
+    d.className = "stat ability";
+    d.innerHTML = `<label>${name}</label><input type="number" value="10" min="1" max="30" aria-label="${name} score"><div class="mod">+0</div>`;
+    const input = d.querySelector("input"), mod = d.querySelector(".mod");
+    const update = () => {
+      const m = Math.floor((input.value - 10) / 2);
+      mod.textContent = (m >= 0 ? "+" : "") + m;
+    };
+    input.addEventListener("input", update);
+    abEl.appendChild(d);
+  });
+
+  // Gallery frames with local image upload
+  const grid = document.getElementById("galleryGrid");
+  ["Portrait","Full Body","Action Pose","Concept Sketch","Outfit / Gear","Scene"].forEach(title => {
+    const fig = document.createElement("figure");
+    fig.innerHTML = `<label class="art"><span>+ Add image</span><input type="file" accept="image/*"></label><figcaption contenteditable="true">${title}</figcaption>`;
+    const input = fig.querySelector("input"), art = fig.querySelector(".art");
+    input.addEventListener("change", () => {
+      const file = input.files[0];
+      if (!file) return;
+      const img = document.createElement("img");
+      img.src = URL.createObjectURL(file);
+      img.alt = title;
+      art.querySelector("span").replaceWith(img);
+    });
+    grid.appendChild(fig);
+  });
+
+  // Persist editable text and ability scores in localStorage
+  const KEY = "dnd-artbook-v1";
+  const editables = () => [...document.querySelectorAll("[contenteditable]")];
+  const inputs = () => [...document.querySelectorAll("input[type=number]")];
+  try {
+    const saved = JSON.parse(localStorage.getItem(KEY) || "null");
+    if (saved) {
+      editables().forEach((el, i) => { if (saved.text[i] != null) el.innerHTML = saved.text[i]; });
+      inputs().forEach((el, i) => { if (saved.nums[i] != null) { el.value = saved.nums[i]; el.dispatchEvent(new Event("input")); } });
+    }
+  } catch (e) {}
+  const save = () => {
+    try {
+      localStorage.setItem(KEY, JSON.stringify({
+        text: editables().map(e => e.innerHTML),
+        nums: inputs().map(e => e.value)
+      }));
+    } catch (e) {}
+  };
+  document.addEventListener("input", save);
+</script>
+</body>
+</html>
